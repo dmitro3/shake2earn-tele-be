@@ -5,6 +5,7 @@ import morgan from "morgan";
 import mongoose from "mongoose";
 
 import { usersRouter } from "./routes/users.js";
+import { shakeRouter } from "./routes/shake.js";
 
 const app = express();
 app.use(express.json());
@@ -21,10 +22,11 @@ app.use(
   // })
 );
 
-const DB = process.env.DATABASE?.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
-mongoose
-  .connect(DB)
-  .then(() => console.log('DB connection successful!'))
+const DB = process.env.DATABASE?.replace(
+  "<PASSWORD>",
+  process.env.DATABASE_PASSWORD
+);
+mongoose.connect(DB).then(() => console.log("DB connection successful!"));
 
 // Logging configuration
 if (process.env.NODE_ENV === "development") {
@@ -40,6 +42,7 @@ BigInt.prototype.toJSON = function () {
 
 // Routes
 app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/shake", shakeRouter);
 
 app.get("/", function (_, res) {
   res.send("Hello World");
