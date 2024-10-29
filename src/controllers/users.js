@@ -1,9 +1,9 @@
 import { User } from "../models/user.js";
-import { claimRefer, claimAnniversary } from "../services/users.js";
+import { claimAnniversary, claimRefer } from "../services/users.js";
 
 export const getUser = async (req, res) => {
   try {
-    const telegramId = req.params.telegramId;
+    const { telegramId } = req;
     let user = await User.findOne({ telegramId: telegramId });
 
     if (!user) {

@@ -1,11 +1,12 @@
-import express from "express";
-import "dotenv/config";
 import cors from "cors";
-import morgan from "morgan";
+import "dotenv/config";
+import express from "express";
 import mongoose from "mongoose";
+import morgan from "morgan";
 
-import { usersRouter } from "./routes/users.js";
+import debugRouter from "./routes/debug.js";
 import { shakeRouter } from "./routes/shake.js";
+import { usersRouter } from "./routes/users.js";
 
 const app = express();
 app.use(express.json());
@@ -24,6 +25,7 @@ app.use(
 
 import swaggerUIPath from "swagger-ui-express";
 import swaggerjsonFilePath from "../docs/swagger.json" assert { type: "json" };
+
 app.use(
   "/api-docs",
   swaggerUIPath.serve,
@@ -51,6 +53,10 @@ BigInt.prototype.toJSON = function () {
 // Routes
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/shake", shakeRouter);
+
+if (process.env.NODE_ENV === "development") {
+  app.use("/debug", debugRouter);
+}
 
 app.get("/", function (_, res) {
   res.send("Hello World");

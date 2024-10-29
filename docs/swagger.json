@@ -42,14 +42,13 @@
         }
       }
     },
-    "/api/v1/users/{telegramId}": {
+    "/api/v1/users/": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "telegramId",
-            "in": "path",
-            "required": true,
+            "name": "x-shake-auth",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -57,13 +56,14 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "404": {
             "description": "Not Found"
           }
         }
-      }
-    },
-    "/api/v1/users/": {
+      },
       "post": {
         "description": "",
         "parameters": [
@@ -96,20 +96,15 @@
         }
       }
     },
-    "/api/v1/shake/{telegramId}": {
+    "/api/v1/shake/": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "telegramId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -119,12 +114,6 @@
       "post": {
         "description": "",
         "parameters": [
-          {
-            "name": "telegramId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -142,8 +131,29 @@
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "404": {
             "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/debug/auth-header/{telegramId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "telegramId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
