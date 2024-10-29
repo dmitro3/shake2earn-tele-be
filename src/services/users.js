@@ -1,15 +1,16 @@
+import { INVITE_FRIEND_POINTS } from "../constants/points.js";
 import { User } from "../models/user.js";
 
 export const claimRefer = async (telegramId, referBy) => {
   try {
     const user = await User.findOneAndUpdate(
       { telegramId: telegramId },
-      { $inc: { point: 1 }, referBy: referBy },
+      { $inc: { point: INVITE_FRIEND_POINTS }, referBy: referBy },
       { new: true }
     );
     await User.findOneAndUpdate(
       { telegramId: referBy },
-      { $inc: { point: 1 } },
+      { $inc: { point: INVITE_FRIEND_POINTS } },
       { new: true }
     );
     return user;
@@ -30,7 +31,7 @@ export const claimAnniversary = async (user) => {
       if (lastAwarded.getFullYear() < today.getFullYear()) {
         user = await User.findOneAndUpdate(
           { telegramId: user.telegramId },
-          { $inc: { point: 1 }, lastAwardedAt: today },
+          { $inc: { point: ANNIVERSARY_POINTS }, lastAwardedAt: today },
           { new: true }
         );
       }

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 
 import debugRouter from "./routes/debug.js";
+import { questsRouter } from "./routes/quests.js";
 import { shakeRouter } from "./routes/shake.js";
 import { usersRouter } from "./routes/users.js";
 
@@ -53,6 +54,7 @@ BigInt.prototype.toJSON = function () {
 // Routes
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/shake", shakeRouter);
+app.use('/api/v1/quests', questsRouter);
 
 if (process.env.NODE_ENV === "development") {
   app.use("/debug", debugRouter);
