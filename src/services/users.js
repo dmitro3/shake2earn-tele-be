@@ -1,25 +1,31 @@
-import { INVITE_FRIEND_POINTS } from "../constants/points.js";
-import { User } from "../models/user.js";
+import { INVITE_FRIEND_POINTS } from '../constants/points.js';
+import { User } from '../models/user.js';
 
 export const claimRefer = async (telegramId, referBy) => {
   try {
+    const referByUser = await User.findOneAndUpdate(
+      { telegramId: referBy },
+      { $inc: { point: INVITE_FRIEND_POINTS } },
+      { new: true }
+    );
+
+    // If not found user with referBy, break flow
+    if (!referByUser) {
+      throw new Error(`User with telegramId ${referBy} not found`);
+    }
+
     const user = await User.findOneAndUpdate(
       { telegramId: telegramId },
       { $inc: { point: INVITE_FRIEND_POINTS }, referBy: referBy },
       { new: true }
     );
-    await User.findOneAndUpdate(
-      { telegramId: referBy },
-      { $inc: { point: INVITE_FRIEND_POINTS } },
-      { new: true }
-    );
+
     return user;
   } catch (error) {
     console.log(error);
     throw error;
   }
 };
-
 export const claimAnniversary = async (user) => {
   try {
     const creationDate = user.createdAt;

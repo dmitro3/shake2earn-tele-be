@@ -31,7 +31,11 @@ export const createUser = async (req, res) => {
     });
     const { referBy } = req.body;
     if (referBy) {
-      newUser = await claimRefer(telegramId, referBy);
+      try {
+        newUser = await claimRefer(telegramId, referBy);
+      } catch (error) {
+        // DO NOTHING
+      }
     }
     res.status(201).json(newUser);
   } catch (error) {
