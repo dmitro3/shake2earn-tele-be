@@ -3,7 +3,7 @@ import shakeService from "../services/shake.js";
 
 export const getShakeCount = async (req, res) => {
   try {
-    const telegramId = req.params.telegramId;
+    const { telegramId } = req;
     let user = await User.findOne({ telegramId: telegramId });
 
     if (!user) {
@@ -19,7 +19,7 @@ export const getShakeCount = async (req, res) => {
 
 export const updateShakeCount = async (req, res) => {
   try {
-    const telegramId = req.params.telegramId;
+    const { telegramId } = req;
     const { count } = req.body;
     const user = await shakeService.updateShakeCount(telegramId, count);
 
