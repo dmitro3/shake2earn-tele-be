@@ -43,7 +43,10 @@ jobs:
           set -e  # Stop the script if any command fails
           ssh blockey@${{ secrets.POSEIDON_IP }} << 'EOF'
             cd /home/blockey/shake2earn-tele-be
+            nvm use 18  # Ensure the correct Node.js version is being used
+            git stash || true  # Stash unstaged changes, ignore if there are none
             git pull --rebase origin main
-            /home/blockey/.nvm/versions/node/v18.17.0/bin/npm install
-            /home/blockey/.nvm/versions/node/v18.17.0/bin/pm2 restart 'shake2earn-backend'
+            npm install
+            npm install -g pm2 || true  # Install pm2 globally if not already installed
+            pm2 restart 'shake2earn-backend'
           EOF
