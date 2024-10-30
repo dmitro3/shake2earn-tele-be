@@ -16,7 +16,7 @@ app.use(
   //   {
   //   origin: [
   //     "https://hkhangus.github.io/blockey-tma/",
-  //     "http://localhost:3000",
+  //     "http://localhost:3001",
   //     "http://localhost:3001",
   //     "http://localhost:5173",
   //     "http://localhost:19006",
@@ -54,7 +54,7 @@ BigInt.prototype.toJSON = function () {
 // Routes
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/shake", shakeRouter);
-app.use('/api/v1/quests', questsRouter);
+app.use("/api/v1/quests", questsRouter);
 
 if (process.env.NODE_ENV === "development") {
   app.use("/debug", debugRouter);
@@ -64,9 +64,9 @@ app.get("/", function (_, res) {
   res.send("Hello World");
 });
 
-app.listen(3000);
+app.listen(3001);
 if (process.env.NODE_ENV === "development") {
-  console.log("Server running on http://localhost:3000");
+  console.log("Server running on http://localhost:3001");
 } else {
-  console.log("Server running on port 3000");
+  console.log("Server running on port 3001");
 }
