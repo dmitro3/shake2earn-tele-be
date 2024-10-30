@@ -23,6 +23,7 @@ jobs:
 
       - name: Install SSH key and start SSH agent
         run: |
+          set -e  # Stop the script if any command fails
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           eval $(ssh-agent -s)
@@ -31,9 +32,18 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.POSEIDON_KEY }}
 
       - name: Add Server SSH key to known hosts
-        run: ssh-keyscan -H $POSEIDON_IP >> ~/.ssh/known_hosts
+        run: |
+          set -e  # Stop the script if any command fails
+          ssh-keyscan -H $POSEIDON_IP >> ~/.ssh/known_hosts
         env:
           POSEIDON_IP: ${{ secrets.POSEIDON_IP }}
 
       - name: Deploy via SSH
-        run: ssh blockey@${{ secrets.POSEIDON_IP }} "cd /home/blockey/shake2earn-tele-be && git pull --rebase origin main && /home/blockey/.nvm/versions/node/v18.17.0/bin/npm install && /home/blockey/.nvm/versions/node/v18.17.0/bin/pm2 restart 'shake2earn-backend'"
+        run: |
+          set -e  # Stop the script if any command fails
+          ssh blockey@${{ secrets.POSEIDON_IP }} << 'EOF'
+            cd /home/blockey/shake2earn-tele-be
+            git pull --rebase origin main
+            /home/blockey/.nvm/versions/node/v18.17.0/bin/npm install
+            /home/blockey/.nvm/versions/node/v18.17.0/bin/pm2 restart 'shake2earn-backend'
+          EOF
