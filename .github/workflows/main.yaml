@@ -1,0 +1,39 @@
+name: Deploy to server Poseidon
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create SSH directory
+        run: mkdir -p ~/.ssh
+
+      - name: Install SSH key and start SSH agent
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_ed25519
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.POSEIDON_KEY }}
+
+      - name: Add Server SSH key to known hosts
+        run: ssh-keyscan -H $POSEIDON_IP >> ~/.ssh/known_hosts
+        env:
+          POSEIDON_IP: ${{ secrets.POSEIDON_IP }}
+
+      - name: Deploy via SSH
+        run: ssh blockey@${{ secrets.POSEIDON_IP }} "cd /home/blockey/shake2earn-tele-be && git pull --rebase origin main && /home/blockey/.nvm/versions/node/v18.17.0/bin/npm install && /home/blockey/.nvm/versions/node/v18.17.0/bin/pm2 restart 'shake2earn-backend'"
