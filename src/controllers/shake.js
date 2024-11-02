@@ -22,14 +22,12 @@ export const getShakeCount = async (req, res) => {
 export const updateShakeCount = async (req, res) => {
   try {
     const { telegramId } = req;
-    const { count } = req.body;
-    const user = await shakeService.updateShakeCount({
-      message: "Update shake count successfully",
-      telegramId,
-      count,
-    });
 
-    res.status(200).json(user);
+    const { count } = req.body;
+
+    const user = await shakeService.updateShakeCount(telegramId, count);
+
+    res.status(200).json({ message: "Update shake count successfully", user });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
