@@ -7,6 +7,7 @@ import morgan from "morgan";
 import debugRouter from "./routes/debug.js";
 import { questsRouter } from "./routes/quests.js";
 import { shakeRouter } from "./routes/shake.js";
+import { pointRouter } from "./routes/point.js";
 import { usersRouter } from "./routes/users.js";
 
 const app = express();
@@ -55,6 +56,7 @@ BigInt.prototype.toJSON = function () {
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/shake", shakeRouter);
 app.use("/api/v1/quests", questsRouter);
+app.use("/api/v1/point", pointRouter);
 
 if (process.env.NODE_ENV === "development") {
   app.use("/debug", debugRouter);
