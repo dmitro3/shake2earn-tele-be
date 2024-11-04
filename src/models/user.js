@@ -21,6 +21,10 @@ export const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    hasClaimedJoinChannelQuest: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, // Enable timestamps for this schema
