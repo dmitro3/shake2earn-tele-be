@@ -1,6 +1,10 @@
-import { DAILY_CLAIM_POINTS, INVITE_FRIEND_POINTS } from '../constants/points.js';
+import { Telegram } from 'telegraf';
+import { ROOT_CHANNEL, ROOT_CHANNEL_LINK } from '../constants/channels.js';
+import { DAILY_CLAIM_POINTS, INVITE_FRIEND_POINTS, JOIN_CHANNEL_POINTS } from '../constants/points.js';
 import { DAILY_RESET_HOUR } from '../constants/times.js';
 import { User } from '../models/user.js';
+
+const tg = new Telegram(process.env.BOT_TOKEN);
 
 // Helper function to get today's reset time
 const getTodayResetTime = () => {
@@ -52,6 +56,13 @@ export const getOverview = async (telegramId) => {
       pointsPerInvite: INVITE_FRIEND_POINTS,
       note: `You will receive ${INVITE_FRIEND_POINTS} points for each friend you invite.`,
     },
+    joinChannelQuest: {
+      claimed: user.hasClaimedJoinChannelQuest,
+      channel: ROOT_CHANNEL,
+      channelTelegramLink: ROOT_CHANNEL_LINK,
+      pointsPerClaim: JOIN_CHANNEL_POINTS,
+      note: `You will receive ${JOIN_CHANNEL_POINTS} points for joining our channel.`,
+    },
   };
 };
 
@@ -75,4 +86,42 @@ export const claimDaily = async (telegramId) => {
   await user.save();
 
   return user.point;
+};
+
+// Claim the channel quest
+export const claimChannelQuest = async (telegramId, channelUsername) => {
+  const user = await User.findOne({ telegramId });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  if (user.hasClaimedJoinChannelQuest) {
+    throw new Error('You have already claimed this quest');
+  }
+
+  const isMember = await isUserInChannel(telegramId, channelUsername);
+  if (!isMember) {
+    throw new Error(`You are not a member of the channel, please join our channel at ${ROOT_CHANNEL_LINK}`)
+  }
+
+  user.point += JOIN_CHANNEL_POINTS; // Award points for channel quest
+  await user.save();
+
+  return user.point;
+};
+
+// Function to check if user is a member of the channel
+export const isUserInChannel = async (userId, channelUsername) => {
+  try {
+    const chatMember = await tg.getChatMember(`@${channelUsername}`, userId);
+    const status = chatMember.status;
+    return (
+      status === 'member' ||
+      status === 'administrator' ||
+      status === 'creator'
+    );
+  } catch (error) {
+    console.error('Error checking channel membership:', error);
+    return false;
+  }
 };

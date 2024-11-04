@@ -5,9 +5,9 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 
 import debugRouter from "./routes/debug.js";
+import { pointRouter } from "./routes/point.js";
 import { questsRouter } from "./routes/quests.js";
 import { shakeRouter } from "./routes/shake.js";
-import { pointRouter } from "./routes/point.js";
 import { usersRouter } from "./routes/users.js";
 
 const app = express();
@@ -66,7 +66,7 @@ app.get("/", function (_, res) {
   res.send("Hello World");
 });
 
-app.listen(3001);
+app.listen(process.env.PORT || 3001);
 if (process.env.NODE_ENV === "development") {
   console.log("Server running on http://localhost:3001");
 } else {
