@@ -1,28 +1,28 @@
-import 'dotenv/config';
-import forge from 'node-forge';
-import { User } from '../models/user.js';
+import "dotenv/config";
+import forge from "node-forge";
+import { User } from "../models/user.js";
 
 // Load private key from environment variable
 const privateKeyPem = process.env.PRIVATE_KEY;
 
 if (!privateKeyPem) {
-  throw new Error('PRIVATE_KEY is not defined in the environment variables');
+  throw new Error("PRIVATE_KEY is not defined in the environment variables");
 }
 
 const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
 
 export const basicMiddleware = async (req, res, next) => {
-  const encryptedTelegramId = req.headers['x-shake-auth'];
+  const encryptedTelegramId = req.headers["x-shake-auth"];
 
   if (!encryptedTelegramId) {
     return res.status(400).send({
-      message: 'Missing x-shake-auth header',
+      message: "Missing x-shake-auth header",
     });
   }
 
   try {
     const buffer = forge.util.decode64(encryptedTelegramId);
-    const decryptedTelegramId = privateKey.decrypt(buffer, 'RSA-OAEP', {
+    const decryptedTelegramId = privateKey.decrypt(buffer, "RSA-OAEP", {
       md: forge.md.sha256.create(),
     });
     req.telegramId = decryptedTelegramId;
@@ -30,7 +30,44 @@ export const basicMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     return res.status(400).send({
-      message: 'Invalid x-shake-auth header',
+      message: "Invalid x-shake-auth header",
+      error: error.message,
+    });
+  }
+};
+
+export const sessionMiddleware = async (req, res, next) => {
+  const encryptedSessionData = req.headers["x-shake-session"];
+
+  if (!encryptedSessionData) {
+    return res.status(400).send({
+      message: "Missing x-shake-session header",
+    });
+  }
+
+  try {
+    const buffer = forge.util.decode64(encryptedSessionData);
+    const decryptedSessionData = privateKey.decrypt(buffer, "RSA-OAEP", {
+      md: forge.md.sha256.create(),
+    });
+
+    console.log("decryptedSessionData", decryptedSessionData);
+
+    // convert stringify to json
+    decryptedSessionData = JSON.parse(decryptedSessionData);
+
+    // req.telegramId = decryptedSessionData.telegramId;
+    req.sessionId = decryptedSessionData.sessionId;
+    req.shakeIndex = decryptedSessionData.shakeIndex;
+
+    // req.sessionId = "6729b815fcf0c45199701558";
+    // req.shakeIndex = 10;
+
+    // req.user = await User.findOne({ telegramId: decryptedTelegramId });
+    next();
+  } catch (error) {
+    return res.status(400).send({
+      message: "Invalid x-shake-auth header",
       error: error.message,
     });
   }

@@ -32,3 +32,27 @@ export const updateShakeCount = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+export const startShake = async (req, res) => {
+  try {
+    const { telegramId } = req;
+
+    const session = await shakeService.startShake(telegramId);
+
+    res.status(200).json({ message: "Shake successfully", data: session });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const endShake = async (req, res) => {
+  try {
+    const { sessionId, shakeIndex } = req;
+
+    const session = await shakeService.endShake(sessionId, shakeIndex);
+
+    res.status(200).json({ message: "End shake successfully", data: session });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
