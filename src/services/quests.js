@@ -1,10 +1,9 @@
-import { Telegram } from 'telegraf';
 import { ROOT_CHANNEL, ROOT_CHANNEL_LINK } from '../constants/channels.js';
 import { DAILY_CLAIM_POINTS, INVITE_FRIEND_POINTS, JOIN_CHANNEL_POINTS } from '../constants/points.js';
 import { DAILY_RESET_HOUR } from '../constants/times.js';
 import { User } from '../models/user.js';
-
-const tg = new Telegram(process.env.BOT_TOKEN);
+import "dotenv/config";
+import axios from 'axios';
 
 // Helper function to get today's reset time
 const getTodayResetTime = () => {
@@ -104,7 +103,8 @@ export const claimChannelQuest = async (telegramId, channelUsername) => {
     throw new Error(`You are not a member of the channel, please join our channel at ${ROOT_CHANNEL_LINK}`)
   }
 
-  user.point += JOIN_CHANNEL_POINTS; // Award points for channel quest
+  user.point += JOIN_CHANNEL_POINTS;
+  user.hasClaimedJoinChannelQuest = false;
   await user.save();
 
   return user.point;
@@ -112,16 +112,25 @@ export const claimChannelQuest = async (telegramId, channelUsername) => {
 
 // Function to check if user is a member of the channel
 export const isUserInChannel = async (userId, channelUsername) => {
-  try {
-    const chatMember = await tg.getChatMember(`@${channelUsername}`, userId);
-    const status = chatMember.status;
-    return (
-      status === 'member' ||
-      status === 'administrator' ||
-      status === 'creator'
-    );
-  } catch (error) {
-    console.error('Error checking channel membership:', error);
-    return false;
-  }
-};
+  const token = process.env.BOT_TOKEN;
+
+  // Make the request using axios
+  const response = await axios.post(
+    `https://api.telegram.org/bot${token}/getChatMember`,
+    null,
+    {
+      params: {
+        chat_id: `@${channelUsername}`,
+        user_id: userId,
+      },
+    }
+  );
+
+  // Extract the status from the response
+  const status = response.data.result?.status;
+  return (
+    status === 'member' ||
+    status === 'administrator' ||
+    status === 'creator'
+  );
+}
