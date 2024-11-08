@@ -104,7 +104,7 @@ export const claimChannelQuest = async (telegramId, channelUsername) => {
   }
 
   user.point += JOIN_CHANNEL_POINTS;
-  user.hasClaimedJoinChannelQuest = false;
+  user.hasClaimedJoinChannelQuest = true;
   await user.save();
 
   return user.point;
