@@ -2,8 +2,11 @@ import { ROOT_CHANNEL, ROOT_CHANNEL_LINK } from '../constants/channels.js';
 import { DAILY_CLAIM_POINTS, INVITE_FRIEND_POINTS, JOIN_CHANNEL_POINTS } from '../constants/points.js';
 import { DAILY_RESET_HOUR } from '../constants/times.js';
 import { User } from '../models/user.js';
+import https from 'https';
 import "dotenv/config";
 import axios from 'axios';
+axios.defaults.timeout = 300000;
+axios.defaults.httpsAgent = new https.Agent({ keepAlive: true });
 
 // Helper function to get today's reset time
 const getTodayResetTime = () => {
@@ -112,25 +115,32 @@ export const claimChannelQuest = async (telegramId, channelUsername) => {
 
 // Function to check if user is a member of the channel
 export const isUserInChannel = async (userId, channelUsername) => {
-  const token = process.env.BOT_TOKEN;
+  try {
+    const token = process.env.BOT_TOKEN;
 
-  // Make the request using axios
-  const response = await axios.post(
-    `https://api.telegram.org/bot${token}/getChatMember`,
-    null,
-    {
-      params: {
-        chat_id: `@${channelUsername}`,
-        user_id: userId,
-      },
-    }
-  );
+    // Make the request using axios
+    const response = await axios.post(
+      `https://api.telegram.org/bot${token}/getChatMember`,
+      null,
+      {
+        params: {
+          chat_id: `@${channelUsername}`,
+          user_id: userId,
+        },
+      }
+    );
 
-  // Extract the status from the response
-  const status = response.data.result?.status;
-  return (
-    status === 'member' ||
-    status === 'administrator' ||
-    status === 'creator'
-  );
+    // Extract the status from the response
+    const status = response.data.result?.status;
+    console.log('Channel membership status:', status);
+    return (
+      status === 'member' ||
+      status === 'administrator' ||
+      status === 'creator'
+    );
+  } catch (error) {
+    console.log('Channel membership status:', error);
+    console.log('Error checking channel membership:', error.message);
+    return false;
+  }
 }
