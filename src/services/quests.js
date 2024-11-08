@@ -112,30 +112,25 @@ export const claimChannelQuest = async (telegramId, channelUsername) => {
 
 // Function to check if user is a member of the channel
 export const isUserInChannel = async (userId, channelUsername) => {
-  try {
-    const token = process.env.BOT_TOKEN;
+  const token = process.env.BOT_TOKEN;
 
-    // Make the request using axios
-    const response = await axios.post(
-      `https://api.telegram.org/bot${token}/getChatMember`,
-      null,
-      {
-        params: {
-          chat_id: `@${channelUsername}`,
-          user_id: 5360808891,
-        },
-      }
-    );
+  // Make the request using axios
+  const response = await axios.post(
+    `https://api.telegram.org/bot${token}/getChatMember`,
+    null,
+    {
+      params: {
+        chat_id: `@${channelUsername}`,
+        user_id: userId,
+      },
+    }
+  );
 
-    // Extract the status from the response
-    const status = response.data.result?.status;
-    return (
-      status === 'member' ||
-      status === 'administrator' ||
-      status === 'creator'
-    );
-  } catch (error) {
-    console.error('Error checking channel membership', error);
-    return false;
-  }
+  // Extract the status from the response
+  const status = response.data.result?.status;
+  return (
+    status === 'member' ||
+    status === 'administrator' ||
+    status === 'creator'
+  );
 }
