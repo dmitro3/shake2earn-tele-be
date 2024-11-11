@@ -87,7 +87,7 @@ export const claimDaily = async (telegramId) => {
   user.lastAwardedAt = now;
   await user.save();
 
-  return user.point;
+  return user.shakeCount;
 };
 
 // Claim the channel quest

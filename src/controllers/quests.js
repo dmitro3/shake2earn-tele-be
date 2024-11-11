@@ -14,8 +14,8 @@ export const getOverview = async (req, res) => {
 // Claim the daily quest
 export const claimDaily = async (req, res) => {
   try {
-    const point = await claimDailyService(req.telegramId);
-    res.send({ message: 'Daily quest claimed', point });
+    const turns = await claimDailyService(req.telegramId);
+    res.send({ message: 'Daily quest claimed', turns });
   } catch (error) {
     res.status(500).send({ message: 'Error claiming daily quest', error: error.message });
   }
