@@ -83,7 +83,7 @@ export const claimDaily = async (telegramId) => {
     throw new Error('Daily quest already claimed');
   }
 
-  user.point += DAILY_CLAIM_TURNS; // Award points for daily quest
+  user.shakeCount += DAILY_CLAIM_TURNS; // Award points for daily quest
   user.lastAwardedAt = now;
   await user.save();
 
