@@ -1,10 +1,10 @@
+import axios from 'axios';
+import "dotenv/config";
+import https from 'https';
 import { ROOT_CHANNEL, ROOT_CHANNEL_LINK } from '../constants/channels.js';
-import { DAILY_CLAIM_POINTS, INVITE_FRIEND_POINTS, JOIN_CHANNEL_POINTS } from '../constants/points.js';
+import { DAILY_CLAIM_TURNS, INVITE_FRIEND_TURNS, JOIN_CHANNEL_TURNS } from '../constants/points.js';
 import { DAILY_RESET_HOUR } from '../constants/times.js';
 import { User } from '../models/user.js';
-import https from 'https';
-import "dotenv/config";
-import axios from 'axios';
 axios.defaults.timeout = 300000;
 axios.defaults.httpsAgent = new https.Agent({ keepAlive: true });
 
@@ -50,20 +50,20 @@ export const getOverview = async (telegramId) => {
       claimed: dailyClaimed,
       timeToNextClaim,
       nextClaimAt: nextReset,
-      pointsPerClaim: DAILY_CLAIM_POINTS,
-      note: `You will receive ${DAILY_CLAIM_POINTS} points every day.`,
+      turnsPerClaim: DAILY_CLAIM_TURNS,
+      note: `You will receive ${DAILY_CLAIM_TURNS} shake turns every day.`,
     },
     inviteFriend: {
       invitedFriendsCount,
-      pointsPerInvite: INVITE_FRIEND_POINTS,
-      note: `You will receive ${INVITE_FRIEND_POINTS} points for each friend you invite.`,
+      turnsPerInvite: INVITE_FRIEND_TURNS,
+      note: `You will receive ${INVITE_FRIEND_TURNS} shake turns for each friend you invite.`,
     },
     joinChannelQuest: {
       claimed: user.hasClaimedJoinChannelQuest,
       channel: ROOT_CHANNEL,
       channelTelegramLink: ROOT_CHANNEL_LINK,
-      pointsPerClaim: JOIN_CHANNEL_POINTS,
-      note: `You will receive ${JOIN_CHANNEL_POINTS} points for joining our channel.`,
+      turnsPerClaim: JOIN_CHANNEL_TURNS,
+      note: `You will receive ${JOIN_CHANNEL_TURNS} shake turns for joining our channel.`,
     },
   };
 };
@@ -83,7 +83,7 @@ export const claimDaily = async (telegramId) => {
     throw new Error('Daily quest already claimed');
   }
 
-  user.point += DAILY_CLAIM_POINTS; // Award points for daily quest
+  user.point += DAILY_CLAIM_TURNS; // Award points for daily quest
   user.lastAwardedAt = now;
   await user.save();
 
@@ -106,7 +106,7 @@ export const claimChannelQuest = async (telegramId, channelUsername) => {
     throw new Error(`You are not a member of the channel, please join our channel at ${ROOT_CHANNEL_LINK}`)
   }
 
-  user.point += JOIN_CHANNEL_POINTS;
+  user.point += JOIN_CHANNEL_TURNS;
   user.hasClaimedJoinChannelQuest = true;
   await user.save();
 

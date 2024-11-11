@@ -1,11 +1,11 @@
-import { INVITE_FRIEND_POINTS } from '../constants/points.js';
+import { INVITE_FRIEND_TURNS } from '../constants/points.js';
 import { User } from '../models/user.js';
 
 export const claimRefer = async (telegramId, referBy) => {
   try {
     const referByUser = await User.findOneAndUpdate(
       { telegramId: referBy },
-      { $inc: { point: INVITE_FRIEND_POINTS } },
+      { $inc: { shakeCount: INVITE_FRIEND_TURNS } },
       { new: true }
     );
 
@@ -16,7 +16,7 @@ export const claimRefer = async (telegramId, referBy) => {
 
     const user = await User.findOneAndUpdate(
       { telegramId: telegramId },
-      { $inc: { point: INVITE_FRIEND_POINTS }, referBy: referBy },
+      { $inc: { shakeCount: INVITE_FRIEND_TURNS }, referBy: referBy },
       { new: true }
     );
 

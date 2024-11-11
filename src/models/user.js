@@ -15,7 +15,7 @@ export const userSchema = new mongoose.Schema(
     },
     lastAwardedAt: {
       type: Date,
-      default: new Date(),
+      default: new Date(0),
     },
     shakeCount: {
       type: Number,
