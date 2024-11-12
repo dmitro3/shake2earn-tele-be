@@ -1,5 +1,14 @@
 import { User } from "../models/user.js";
 import shakeService from "../services/shake.js";
+import { SHAKE_TIME, SHAKE_THRESHOLD, SHAKE_MAX } from "../constants/shake.js";
+
+export const getShakeConfig = async (req, res) => {
+  res.status(200).json({
+    shakeTime: SHAKE_TIME,
+    shakeThreshold: SHAKE_THRESHOLD,
+    shakeMax: SHAKE_MAX,
+  });
+};
 
 export const getShakeCount = async (req, res) => {
   try {

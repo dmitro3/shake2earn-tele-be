@@ -1,6 +1,5 @@
 import { User } from "../models/user.js";
 import { claimAnniversary, claimRefer } from "../services/users.js";
-import { SHAKE_TIME, SHAKE_THRESHOLD, SHAKE_MAX } from "../constants/shake.js";
 
 export const getUser = async (req, res) => {
   try {
@@ -10,18 +9,14 @@ export const getUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    // Process user anniversary if needed
     user = await claimAnniversary(user);
 
-    // get config
-    const config = {
-      shakeTime: SHAKE_TIME,
-      shakeThreshold: SHAKE_THRESHOLD,
-      shakeMax: SHAKE_MAX,
-    };
-
-    res.status(200).json({ user, config });
+    // Send response with user data and config
+    res.status(200).json(user);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
