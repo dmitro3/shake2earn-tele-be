@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { SHAKE_TOTAL } from "../constants/shake.js";
+import { SHAKE_MAX } from "../constants/shake.js";
 
 const sessionSchema = new mongoose.Schema(
   {
@@ -11,21 +11,21 @@ const sessionSchema = new mongoose.Schema(
     expectedResult: {
       type: [Number], // 0: point, 1: turn
       validate: {
-        validator: (arr) => arr.length == SHAKE_TOTAL,
+        validator: (arr) => arr.length == SHAKE_MAX,
         message: "Expected results array cannot exceed 72 items.",
       },
     },
     expectedPoint: {
       type: [Number],
       validate: {
-        validator: (arr) => arr.length == SHAKE_TOTAL,
+        validator: (arr) => arr.length == SHAKE_MAX,
         message: "Expected points array cannot exceed 72 items.",
       },
     },
     expectedTurn: {
       type: [Number],
       validate: {
-        validator: (arr) => arr.length == SHAKE_TOTAL,
+        validator: (arr) => arr.length == SHAKE_MAX,
         message: "Expected shakes array cannot exceed 72 items.",
       },
     },

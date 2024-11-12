@@ -1,6 +1,6 @@
 import { User } from "../models/user.js";
 import { Session } from "../models/session.js";
-import { SHAKE_TOTAL, SHAKE_TIME } from "../constants/shake.js";
+import { SHAKE_MAX, SHAKE_TIME } from "../constants/shake.js";
 import { startSession } from "mongoose"; // Import the necessary mongoose methods
 
 const getShakeCount = async (telegramId) => {
@@ -169,17 +169,17 @@ const endShake = async (sessionId, shakeIndex) => {
 };
 
 // Generate an array with a specified length, each a random integer between 1 and 5
-const randomShakePoint = (length = SHAKE_TOTAL) => {
+const randomShakePoint = (length = SHAKE_MAX) => {
   return Array.from({ length }, () => Math.floor(Math.random() * 5) + 1);
 };
 
 // Generate an array with a specified length, each element being 1
-const randomShakeTurn = (length = SHAKE_TOTAL) => {
+const randomShakeTurn = (length = SHAKE_MAX) => {
   return new Array(length).fill(1);
 };
 
 // Generate an array of specified length with 80% chance for 0 and 20% chance for 1
-const randomShakeResult = (length = SHAKE_TOTAL) => {
+const randomShakeResult = (length = SHAKE_MAX) => {
   const countOfOnes = Math.floor(length * 0.2); // 20% of total length
   const countOfZeros = length - countOfOnes; // Remaining for 0s
 

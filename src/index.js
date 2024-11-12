@@ -28,11 +28,11 @@ app.use(
 import swaggerUIPath from "swagger-ui-express";
 import swaggerjsonFilePath from "../docs/swagger.json" assert { type: "json" };
 
-app.use(
-  "/api-docs",
-  swaggerUIPath.serve,
-  swaggerUIPath.setup(swaggerjsonFilePath)
-);
+// app.use(
+//   "/api-docs",
+//   swaggerUIPath.serve,
+//   swaggerUIPath.setup(swaggerjsonFilePath)
+// );
 
 const DB = process.env.DATABASE?.replace(
   "<PASSWORD>",
