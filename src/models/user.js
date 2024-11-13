@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { INIT_SHAKE_FOR_NEW_USER } from "../constants/shake";
+import { INIT_SHAKE_FOR_NEW_USER } from "../constants/shake.js";
 
 export const userSchema = new mongoose.Schema(
   {
