@@ -1,4 +1,4 @@
-import { INVITE_FRIEND_TURNS } from '../constants/points.js';
+import { ANNIVERSARY_POINTS, INVITE_FRIEND_TURNS } from '../constants/points.js';
 import { User } from '../models/user.js';
 
 export const claimRefer = async (telegramId, referBy) => {

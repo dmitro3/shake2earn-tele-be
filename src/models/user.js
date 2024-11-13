@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { INIT_SHAKE_FOR_NEW_USER } from "../constants/shake";
 
 export const userSchema = new mongoose.Schema(
   {
@@ -19,7 +20,7 @@ export const userSchema = new mongoose.Schema(
     },
     shakeCount: {
       type: Number,
-      default: 0,
+      default: INIT_SHAKE_FOR_NEW_USER,
     },
     hasClaimedJoinChannelQuest: {
       type: Boolean,
