@@ -23,6 +23,7 @@ export default class TonProofService {
    */
   async checkProof(payload, getWalletPublicKey) {
     try {
+      console.log({ payload, getWalletPublicKey });
       const stateInit = loadStateInit(
         Cell.fromBase64(payload.proof.state_init).beginParse()
       );
@@ -32,11 +33,16 @@ export default class TonProofService {
         (await getWalletPublicKey(payload.address));
       if (!publicKey) return false;
 
+      console.log({ publicKey });
+
       const wantedPublicKey = Buffer.from(payload.public_key, "hex");
       if (!publicKey.equals(wantedPublicKey)) return false;
 
       const wantedAddress = Address.parse(payload.address);
       const address = contractAddress(wantedAddress.workChain, stateInit);
+
+      console.log({ address });
+
       if (!address.equals(wantedAddress)) return false;
 
       if (!allowedDomains.includes(payload.proof.domain.value)) return false;
@@ -56,6 +62,8 @@ export default class TonProofService {
         stateInit: payload.proof.state_init,
         timestamp: payload.proof.timestamp,
       };
+
+      console.log({ message });
 
       const wc = Buffer.alloc(4);
       wc.writeUInt32BE(message.workchain, 0);

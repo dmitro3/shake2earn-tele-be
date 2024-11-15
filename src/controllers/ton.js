@@ -14,7 +14,7 @@ export const generatePayload = async (req, res) => {
 export const checkProof = async (req, res) => {
   try {
     const body = req.body; // Assumes parse method exists
-    const client = TonApiService.create(body.network);
+    const client = await TonApiService.create(body.network);
     const service = new TonProofService();
 
     const isValid = await service.checkProof(body, (address) =>

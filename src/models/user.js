@@ -26,6 +26,10 @@ export const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isConnectedWallet: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, // Enable timestamps for this schema
