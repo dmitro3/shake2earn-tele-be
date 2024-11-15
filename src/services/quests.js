@@ -1,12 +1,20 @@
-import axios from 'axios';
+import axios from "axios";
 import "dotenv/config";
-import https from 'https';
-import { ROOT_CHANNEL, ROOT_CHANNEL_LINK } from '../constants/channels.js';
-import { DAILY_CLAIM_TURNS, INVITE_FRIEND_TURNS, JOIN_CHANNEL_TURNS } from '../constants/points.js';
-import { DAILY_RESET_HOUR } from '../constants/times.js';
-import { User } from '../models/user.js';
+import https from "https";
+import { ROOT_CHANNEL, ROOT_CHANNEL_LINK } from "../constants/channels.js";
+import {
+  DAILY_CLAIM_TURNS,
+  INVITE_FRIEND_TURNS,
+  JOIN_CHANNEL_TURNS,
+  CONNECT_WALLET_TURNS,
+} from "../constants/points.js";
+import { DAILY_RESET_HOUR } from "../constants/times.js";
+import { User } from "../models/user.js";
 axios.defaults.timeout = 300000;
 axios.defaults.httpsAgent = new https.Agent({ keepAlive: true });
+
+import TonProofService from "../services/ton-proof.js";
+import TonApiService from "../services/ton-api.js"; // Make sure this import exists
 
 // Helper function to get today's reset time
 const getTodayResetTime = () => {
@@ -31,7 +39,7 @@ const getNextResetTime = () => {
 export const getOverview = async (telegramId) => {
   const user = await User.findOne({ telegramId });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
   const now = new Date();
@@ -40,7 +48,9 @@ export const getOverview = async (telegramId) => {
   const dailyClaimed = user.lastAwardedAt >= todayReset;
   const timeToNextClaim = dailyClaimed ? nextReset - now : 0;
 
-  const invitedFriendsCount = await User.countDocuments({ referBy: user.telegramId });
+  const invitedFriendsCount = await User.countDocuments({
+    referBy: user.telegramId,
+  });
 
   return {
     point: user.point,
@@ -72,7 +82,7 @@ export const getOverview = async (telegramId) => {
 export const claimDaily = async (telegramId) => {
   const user = await User.findOne({ telegramId });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
   const now = new Date();
@@ -80,7 +90,7 @@ export const claimDaily = async (telegramId) => {
   const nextReset = getNextResetTime();
 
   if (user.lastAwardedAt >= todayReset) {
-    throw new Error('Daily quest already claimed');
+    throw new Error("Daily quest already claimed");
   }
 
   user.shakeCount += DAILY_CLAIM_TURNS; // Award points for daily quest
@@ -94,19 +104,21 @@ export const claimDaily = async (telegramId) => {
 export const claimChannelQuest = async (telegramId, channelUsername) => {
   const user = await User.findOne({ telegramId });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
   if (user.hasClaimedJoinChannelQuest) {
-    throw new Error('You have already claimed this quest');
+    throw new Error("You have already claimed this quest");
   }
 
   const isMember = await isUserInChannel(telegramId, channelUsername);
   if (!isMember) {
-    throw new Error(`You are not a member of the channel, please join our channel at ${ROOT_CHANNEL_LINK}`)
+    throw new Error(
+      `You are not a member of the channel, please join our channel at ${ROOT_CHANNEL_LINK}`
+    );
   }
 
-  user.point += JOIN_CHANNEL_TURNS;
+  user.shakeCount += JOIN_CHANNEL_TURNS;
   user.hasClaimedJoinChannelQuest = true;
   await user.save();
 
@@ -132,15 +144,50 @@ export const isUserInChannel = async (userId, channelUsername) => {
 
     // Extract the status from the response
     const status = response.data.result?.status;
-    console.log('Channel membership status:', status);
+    console.log("Channel membership status:", status);
     return (
-      status === 'member' ||
-      status === 'administrator' ||
-      status === 'creator'
+      status === "member" || status === "administrator" || status === "creator"
     );
   } catch (error) {
-    console.log('Channel membership status:', error);
-    console.log('Error checking channel membership:', error.message);
+    console.log("Channel membership status:", error);
+    console.log("Error checking channel membership:", error.message);
     return false;
   }
-}
+};
+
+export const claimConnectWallet = async (telegramId, tonProof) => {
+  const user = await User.findOne({ telegramId });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.isConnectedWallet) {
+    throw new Error("You have already claimed this quest");
+  }
+
+  const isValid = await isConnectedWallet(tonProof);
+  if (!isValid) {
+    throw new Error(
+      "You still haven't connected your TON wallet. Please connect it and try again."
+    );
+  }
+
+  console.log("isValid", isValid);
+
+  user.shakeCount += CONNECT_WALLET_TURNS;
+  user.isConnectedWallet = true;
+  await user.save();
+
+  return user.point;
+};
+
+export const isConnectedWallet = async (tonProof) => {
+  const client = await TonApiService.create(tonProof.network);
+  const service = new TonProofService();
+
+  const isValid = await service.checkProof(tonProof, (address) =>
+    client.getWalletPublicKey(address)
+  );
+
+  return isValid;
+};

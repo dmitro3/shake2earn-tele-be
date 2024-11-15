@@ -9,6 +9,7 @@ import { pointRouter } from "./routes/point.js";
 import { questsRouter } from "./routes/quests.js";
 import { shakeRouter } from "./routes/shake.js";
 import { usersRouter } from "./routes/users.js";
+import { tonRouter } from "./routes/ton.js";
 
 const app = express();
 app.use(express.json());
@@ -57,6 +58,7 @@ app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/shake", shakeRouter);
 app.use("/api/v1/quests", questsRouter);
 app.use("/api/v1/point", pointRouter);
+app.use("/api/v1/ton", tonRouter);
 
 if (process.env.NODE_ENV === "development") {
   app.use("/debug", debugRouter);
