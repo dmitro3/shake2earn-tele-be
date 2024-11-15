@@ -1,5 +1,5 @@
 import { Address, TonClient4 } from "@ton/ton";
-import { CHAIN } from "@tonconnect/ui-react";
+import { CHAIN } from "../constants/ton.js";
 import { Buffer } from "buffer";
 
 class TonApiService {
